@@ -354,39 +354,6 @@ with st.sidebar:
 
     st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
 
-    selected_sources = st.multiselect(
-        "Sources",
-        options=list(SCRAPE_SOURCES.keys()),
-        default=list(SCRAPE_SOURCES.keys()),
-        label_visibility="collapsed",
-    )
-
-    if st.button("Ingest Documents"):
-        sources_to_scrape = {k: v for k, v in SCRAPE_SOURCES.items() if k in selected_sources}
-        progress_text = st.empty()
-        progress_bar = st.progress(0)
-
-        scraper = DevOpsDocScraper()
-        all_docs = scraper.scrape_all(sources_to_scrape)
-
-        if all_docs:
-            progress_text.text("Loading embeddings...")
-            embedder = LocalEmbeddings(EMBEDDING_MODEL)
-            progress_bar.progress(50)
-            texts = [doc.content for doc in all_docs]
-            metadatas = [doc.metadata for doc in all_docs]
-            progress_text.text("Generating embeddings...")
-            embeddings = embedder.embed_documents(texts)
-            progress_bar.progress(75)
-            progress_text.text("Storing...")
-            store = ChromaVectorStore(persist_dir=CHROMA_PERSIST_DIR, collection_name=CHROMA_COLLECTION)
-            store.add_documents(texts, embeddings, metadatas)
-            progress_bar.progress(100)
-            st.success(f"Ingested {len(all_docs)} docs")
-            st.rerun()
-
-    st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
-
     if st.session_state.messages:
         if st.button("Clear Chat", type="secondary"):
             st.session_state.messages = []
