@@ -354,23 +354,6 @@ with st.sidebar:
 
     st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
 
-    st.markdown('<div class="sidebar-header">Knowledge Base</div>', unsafe_allow_html=True)
-
-    try:
-        store = ChromaVectorStore(persist_dir=CHROMA_PERSIST_DIR, collection_name=CHROMA_COLLECTION)
-        stats = store.get_stats()
-        doc_count = stats["total_documents"]
-    except Exception:
-        doc_count = 0
-
-    st.markdown(f"""
-    <div class="metric-card">
-        <div class="metric-value">{doc_count}</div>
-        <div class="metric-label">Documents Indexed</div>
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown("")
     selected_sources = st.multiselect(
         "Sources",
         options=list(SCRAPE_SOURCES.keys()),
